@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAM CUSTOM PAINT - Atelier Pro v8.2</title>
+    <title>DAM CUSTOM PAINT - Atelier Pro v9.0</title>
     
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -70,21 +70,9 @@
             width: 100%; padding: 20px; background: #000; color: var(--neon-blue); 
             border: 3px solid var(--neon-blue); border-radius: 12px; font-weight: 900; 
             font-size: 1.2em; cursor: pointer; text-transform: uppercase;
+            transition: 0.3s;
         }
-
-        .btn-whatsapp {
-            width: 100%; padding: 15px; background: #25D366; color: #fff; 
-            border: none; border-radius: 12px; font-weight: bold; 
-            font-size: 1em; cursor: pointer; text-transform: uppercase;
-            margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-
-        .btn-sms {
-            width: 100%; padding: 15px; background: #007AFF; color: #fff; 
-            border: none; border-radius: 12px; font-weight: bold; 
-            font-size: 1em; cursor: pointer; text-transform: uppercase;
-            margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
+        .btn-submit:hover { background: var(--neon-blue); color: #000; }
 
         .hidden { display: none; }
     </style>
@@ -103,7 +91,7 @@
             <div style="padding: 15px;">
                 <input type="text" id="nom" placeholder="NOM DU CLIENT">
                 <input type="text" id="mail" placeholder="MAIL DU CLIENT">
-                <input type="tel" id="tel" placeholder="TÉLÉPHONE (ex: 0612345678)">
+                <input type="tel" id="tel" placeholder="TÉLÉPHONE">
             </div>
         </div>
 
@@ -156,7 +144,7 @@
                     <input type="date" id="date_acompte">
                 </div>
                 <div style="margin-bottom: 10px;">
-                    <label style="font-size: 12px; color: var(--neon-blue);">DATE DE DÉPÔT PRÉVU :</label>
+                    <label style="font-size: 12px; color: var(--neon-blue);">DATE DE DÉPÔT DU PROJET PRÉVU :</label>
                     <input type="date" id="date_depot">
                 </div>
 
@@ -167,15 +155,7 @@
             </div>
         </div>
 
-        <button type="button" class="btn-submit" onclick="generatePDF()">GÉNÉRER LE PDF</button>
-        
-        <button type="button" class="btn-whatsapp" onclick="sendWhatsApp()">
-            <i class="fa-brands fa-whatsapp"></i> Envoyer via WhatsApp
-        </button>
-
-        <button type="button" class="btn-sms" onclick="sendSMS()">
-            <i class="fa-solid fa-comment-sms"></i> Envoyer via SMS
-        </button>
+        <button type="button" class="btn-submit" onclick="generatePDF()">GÉNÉRER ET ENVOYER LE PDF</button>
     </form>
 </div>
 
@@ -236,81 +216,102 @@
         try {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+
+            // HEADER
             doc.setFont("helvetica", "bold");
             doc.setFontSize(22);
             doc.setTextColor(233, 30, 99);
             doc.text("DAM CUSTOM PAINT", 105, 20, { align: 'center' });
+            
             doc.setFontSize(10);
             doc.setTextColor(100);
             doc.text("SIRET : 839 100 898 00015 | Annequin (62)", 105, 28, { align: 'center' });
             doc.text("TVA non applicable, art. 293 B du CGI", 105, 33, { align: 'center' });
+
+            // INFOS CLIENT
+            const nomC = document.getElementById('nom').value || 'CLIENT';
             doc.setFontSize(12);
             doc.setTextColor(0);
-            doc.text(`CLIENT : ${document.getElementById('nom').value || 'Non renseigné'}`, 15, 50);
+            doc.text(`CLIENT : ${nomC}`, 15, 50);
             doc.setFont("helvetica", "normal");
             doc.text(`Email : ${document.getElementById('mail').value || '-'}`, 15, 57);
             doc.text(`Tél : ${document.getElementById('tel').value || '-'}`, 15, 64);
+
+            // INFOS VÉHICULE
+            const marque = document.getElementById('marque').value;
+            const modele = document.getElementById('moto_modele').value;
             doc.setFont("helvetica", "bold");
             doc.text("VÉHICULE :", 15, 78);
             doc.setFont("helvetica", "normal");
-            doc.text(`${document.getElementById('marque').value} ${document.getElementById('moto_modele').value} [${document.getElementById('immat').value || 'SANS IMMAT'}]`, 50, 78);
+            doc.text(`${marque} ${modele} [${document.getElementById('immat').value || 'SANS IMMAT'}]`, 50, 78);
             doc.text(`Date de dépôt prévue : ${document.getElementById('date_depot').value || 'À définir'}`, 15, 85);
+
             doc.setDrawColor(200);
             doc.line(15, 92, 195, 92);
+
+            // RÈGLEMENT
             const prix = parseFloat(document.getElementById('prix').value) || 0;
             const acompte = parseFloat(document.getElementById('acompte').value) || 0;
             const mode = document.getElementById('mode_reglement').value;
             const dateAcompte = document.getElementById('date_acompte').value || '-';
+
             doc.setFont("helvetica", "bold");
             doc.text("DÉTAILS DU RÈGLEMENT :", 15, 102);
             doc.setFont("helvetica", "normal");
             doc.text(`PRIX TOTAL : ${prix} EUR`, 15, 110);
             doc.text(`ACOMPTE VERSÉ : ${acompte} EUR (le ${dateAcompte})`, 15, 117);
             doc.text(`MODE DE RÈGLEMENT : ${mode}`, 15, 124); 
+            
             doc.setFont("helvetica", "bold");
             doc.setTextColor(233, 30, 99);
             doc.text(`RESTE À RÉGLER (SOLDE) : ${prix - acompte} EUR`, 15, 134);
             doc.setTextColor(0);
+
+            // PHOTOS
             doc.setFontSize(10);
             doc.text("PHOTOS ÉTAT INITIAL :", 15, 148);
             let xOff = 15;
-            imgEtat.forEach(img => { try { doc.addImage(img, 'JPEG', xOff, 150, 30, 30); xOff += 35; } catch(e){} });
+            imgEtat.forEach(img => { 
+                try { doc.addImage(img, 'JPEG', xOff, 150, 30, 30); xOff += 35; } catch(e){} 
+            });
+            
             doc.text("PHOTOS INSPIRATION :", 15, 188);
             xOff = 15;
-            imgInsp.forEach(img => { try { doc.addImage(img, 'JPEG', xOff, 190, 30, 30); xOff += 35; } catch(e){} });
+            imgInsp.forEach(img => { 
+                try { doc.addImage(img, 'JPEG', xOff, 190, 30, 30); xOff += 35; } catch(e){} 
+            });
+
+            // SIGNATURE
             if (!signaturePad.isEmpty()) {
                 doc.setFont("helvetica", "bold");
                 doc.text("SIGNATURE CLIENT :", 140, 235);
                 const sigData = signaturePad.toDataURL();
                 doc.addImage(sigData, 'PNG', 140, 240, 45, 25);
             }
+
             doc.setFontSize(8);
             doc.setTextColor(150);
             doc.text("Document généré numériquement par DAM CUSTOM PAINT", 105, 285, { align: 'center' });
-            doc.save(`BON_DAM_${document.getElementById('nom').value || 'SANS_NOM'}.pdf`);
+
+            // ENVOI / PARTAGE (C'est ici que la magie opère)
+            const pdfBlob = doc.output('blob');
+            const fileName = `BON_DAM_${nomC.replace(/\s+/g, '_')}.pdf`;
+
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], fileName, { type: 'application/pdf' })] })) {
+                const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+                await navigator.share({
+                    files: [file],
+                    title: 'Bon de commande DAM CUSTOM PAINT',
+                    text: `Bonjour ${nomC}, voici votre bon de commande pour votre ${marque} ${modele}.`
+                });
+            } else {
+                // Si pas de partage natif (vieux navigateur), on télécharge simplement
+                doc.save(fileName);
+            }
+
         } catch (err) {
-            alert("Une erreur est survenue lors de la création du PDF : " + err.message);
+            alert("Erreur : " + err.message);
         }
-    }
-
-    function sendWhatsApp() {
-        const tel = document.getElementById('tel').value;
-        const nom = document.getElementById('nom').value;
-        if(!tel) { alert("Saisissez un numéro !"); return; }
-        const msg = `Bonjour ${nom}, c'est DAM CUSTOM PAINT. Voici votre bon de commande pour votre ${document.getElementById('marque').value}. Je vous l'envoie ci-joint.`;
-        const cleanTel = tel.replace(/\s/g, '').replace(/^0/, '33'); 
-        window.open(`https://wa.me/${cleanTel}?text=${encodeURIComponent(msg)}`, '_blank');
-    }
-
-    // FONCTION SMS
-    function sendSMS() {
-        const tel = document.getElementById('tel').value;
-        const nom = document.getElementById('nom').value;
-        if(!tel) { alert("Saisissez un numéro !"); return; }
-        const msg = `Bonjour ${nom}, c'est DAM CUSTOM PAINT. Votre bon de commande pour votre ${document.getElementById('marque').value} a ete genere. Je vous l'envoie par WhatsApp ou Mail.`;
-        
-        // Sur iPhone et Android, le lien sms: ouvre l'application de messagerie
-        window.location.href = `sms:${tel}?body=${encodeURIComponent(msg)}`;
     }
 </script>
 
