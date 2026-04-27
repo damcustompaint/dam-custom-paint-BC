@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAM CUSTOM PAINT - Atelier Pro v9.5</title>
+    <title>DAM CUSTOM PAINT - Atelier Pro v10</title>
     
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -13,44 +13,66 @@
         :root {
             --neon-blue: #00f3ff;
             --neon-pink: #ff00ff;
+            --neon-green: #00ff88;
             --dark-bg: #0d0d0d;
             --card-bg: #1a1a1a;
             --text-color: #ffffff;
         }
 
+        * { box-sizing: border-box; }
+
         body {
             background-color: var(--dark-bg);
             color: var(--text-color);
             font-family: 'Segoe UI', sans-serif;
-            margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center;
+            margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
         }
 
         #app-container {
             max-width: 650px; width: 100%;
             background: var(--card-bg);
             border: 2px solid #333; border-radius: 20px;
-            padding: 30px; box-sizing: border-box;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0,243,255,0.08);
         }
 
         .header-pro {
             border: 3px solid var(--neon-blue);
             padding: 20px; text-align: center; margin-bottom: 30px; border-radius: 15px;
+            background: linear-gradient(135deg, #0d0d0d, #1a0a1a);
         }
 
-        .logo-text { font-size: 26px; font-weight: 900; color: var(--neon-pink); text-transform: uppercase; text-shadow: 2px 2px 0 #000; }
+        .logo-text {
+            font-size: 26px; font-weight: 900; color: var(--neon-pink);
+            text-transform: uppercase; text-shadow: 2px 2px 0 #000, 0 0 20px rgba(255,0,255,0.5);
+        }
 
-        .section-card { background: #222; border-radius: 12px; margin-bottom: 20px; border-left: 8px solid #333; overflow: hidden; }
-        .card-pink { border-left-color: var(--neon-pink); }
-        .card-blue { border-left-color: var(--neon-blue); }
+        .section-card {
+            background: #1e1e1e; border-radius: 12px;
+            margin-bottom: 20px; border-left: 8px solid #333; overflow: hidden;
+        }
+        .card-pink  { border-left-color: var(--neon-pink); }
+        .card-blue  { border-left-color: var(--neon-blue); }
+        .card-green { border-left-color: var(--neon-green); }
 
-        h2 { font-size: 1em; text-transform: uppercase; padding: 12px 15px; margin: 0; background: rgba(0,0,0,0.2); }
-        
+        h2 {
+            font-size: 0.9em; text-transform: uppercase;
+            padding: 12px 15px; margin: 0;
+            background: rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+
         input, textarea, select {
-            width: 100%; background: #111; border: 2px solid #333;
-            color: #fff; padding: 12px; border-radius: 8px; box-sizing: border-box;
+            width: 100%; background: #111; border: 2px solid #2a2a2a;
+            color: #fff; padding: 12px; border-radius: 8px;
             margin-bottom: 12px; font-size: 14px;
+            transition: border-color 0.2s;
         }
+        input:focus, textarea:focus, select:focus {
+            outline: none; border-color: var(--neon-blue);
+        }
+        textarea { resize: vertical; min-height: 110px; font-family: 'Segoe UI', sans-serif; line-height: 1.5; }
 
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
@@ -58,21 +80,106 @@
             background: #111; border: 1px dashed var(--neon-blue);
             color: var(--neon-blue); padding: 10px; border-radius: 8px;
             text-align: center; cursor: pointer; display: block; margin-bottom: 10px;
+            transition: background 0.2s;
         }
+        .photo-btn:active { background: rgba(0,243,255,0.1); }
 
-        .gallery { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .gallery img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; border: 1px solid var(--neon-blue); }
+        .gallery {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 8px; margin-bottom: 15px;
+        }
+        .gallery-item {
+            position: relative; aspect-ratio: 1;
+            border-radius: 8px; overflow: hidden; border: 2px solid var(--neon-blue);
+        }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .gallery-item .delete-btn {
+            position: absolute; top: 4px; right: 4px;
+            background: rgba(200,0,0,0.85); border: none; color: #fff;
+            border-radius: 50%; width: 24px; height: 24px;
+            font-size: 12px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-weight: bold;
+        }
+        .gallery-item .img-label {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: rgba(0,0,0,0.65); font-size: 10px;
+            text-align: center; color: #fff; padding: 2px;
+        }
+        .gallery-slot-empty {
+            aspect-ratio: 1; border-radius: 8px; border: 2px dashed #333;
+            display: flex; align-items: center; justify-content: center;
+            color: #444; font-size: 22px;
+        }
 
         .sig-wrapper { background: #fff; border-radius: 10px; margin-top: 10px; }
         canvas { width: 100%; height: 150px; cursor: crosshair; touch-action: none; }
 
         .btn-submit {
-            width: 100%; padding: 20px; background: #000; color: var(--neon-blue); 
-            border: 3px solid var(--neon-blue); border-radius: 12px; font-weight: 900; 
-            font-size: 1.2em; cursor: pointer; text-transform: uppercase;
-            transition: 0.3s;
+            width: 100%; padding: 20px; background: #000; color: var(--neon-blue);
+            border: 3px solid var(--neon-blue); border-radius: 12px; font-weight: 900;
+            font-size: 1.2em; cursor: pointer; text-transform: uppercase; transition: 0.3s;
         }
         .btn-submit:hover { background: var(--neon-blue); color: #000; }
+
+        .photo-count-badge {
+            display: inline-block; background: var(--neon-pink); color: #000;
+            font-size: 11px; font-weight: bold; border-radius: 10px;
+            padding: 2px 8px; margin-left: 8px;
+        }
+
+        /* ===== BLOC PROJET ===== */
+        .projet-toolbar {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;
+        }
+
+        .tool-btn {
+            flex: 1; min-width: 80px;
+            background: #111; border: 1.5px solid #333;
+            color: #ccc; padding: 9px 6px; border-radius: 8px;
+            font-size: 12px; cursor: pointer; text-align: center;
+            transition: 0.2s; font-weight: 600;
+        }
+        .tool-btn:hover { border-color: var(--neon-green); color: var(--neon-green); }
+        .tool-btn.active { border-color: var(--neon-green); color: #000; background: var(--neon-green); }
+
+        /* Bouton micro */
+        #btnMic {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 14px; border-radius: 10px;
+            background: #0a1a0a; border: 2px solid var(--neon-green);
+            color: var(--neon-green); font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: 0.3s; margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        #btnMic:hover { background: rgba(0,255,136,0.12); }
+        #btnMic.recording {
+            background: rgba(255,0,0,0.15);
+            border-color: #ff4444;
+            color: #ff4444;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(255,68,68,0.4); }
+            50%      { box-shadow: 0 0 0 8px rgba(255,68,68,0); }
+        }
+
+        #micStatus {
+            text-align: center; font-size: 12px; color: #666;
+            margin-bottom: 10px; min-height: 16px;
+        }
+
+        /* Chips couleurs */
+        .color-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .chip {
+            padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;
+            cursor: pointer; border: 2px solid transparent; transition: 0.2s;
+            user-select: none;
+        }
+        .chip:hover { transform: scale(1.05); }
+        .chip.selected { border-color: #fff; transform: scale(1.08); }
+
+        .char-count { font-size: 11px; color: #555; text-align: right; margin-top: -8px; margin-bottom: 10px; }
 
         .hidden { display: none; }
     </style>
@@ -80,59 +187,127 @@
 <body>
 
 <div id="app-container">
+
     <div class="header-pro">
         <div class="logo-text">DAM CUSTOM PAINT</div>
-        <div style="font-size: 0.8em; color: var(--neon-blue); font-weight: bold; margin-top: 5px;">SIRET : 839 100 898 00015</div>
+        <div style="font-size:0.8em; color:var(--neon-blue); font-weight:bold; margin-top:5px;">SIRET : 839 100 898 00015</div>
     </div>
 
     <form id="orderForm">
+
+        <!-- ══ CLIENT ══ -->
         <div class="section-card card-pink">
             <h2><i class="fa-solid fa-user"></i> Client</h2>
-            <div style="padding: 15px;">
-                <input type="text" id="nom" placeholder="NOM DU CLIENT">
-                <input type="text" id="mail" placeholder="MAIL DU CLIENT">
-                <input type="tel" id="tel" placeholder="TÉLÉPHONE">
+            <div style="padding:15px;">
+                <input type="text"  id="nom"  placeholder="NOM DU CLIENT">
+                <input type="text"  id="mail" placeholder="MAIL DU CLIENT">
+                <input type="tel"   id="tel"  placeholder="TÉLÉPHONE">
             </div>
         </div>
 
+        <!-- ══ MOTO ══ -->
         <div class="section-card card-pink">
             <h2><i class="fa-solid fa-motorcycle"></i> Moto</h2>
-            <div style="padding: 15px;">
+            <div style="padding:15px;">
                 <select id="marque">
                     <option value="">-- MARQUE --</option>
-                    <option value="Yamaha">Yamaha</option>
-                    <option value="Honda">Honda</option>
-                    <option value="Kawasaki">Kawasaki</option>
-                    <option value="BMW">BMW</option>
-                    <option value="Harley">Harley-Davidson</option>
-                    <option value="Suzuki">Suzuki</option>
-                    <option value="Autre">Autre</option>
+                    <option>Yamaha</option><option>Honda</option><option>Kawasaki</option>
+                    <option>BMW</option><option>Harley</option><option>Suzuki</option><option>Autre</option>
                 </select>
-                <select id="moto_modele">
-                    <option value="">-- MODÈLE --</option>
-                </select>
+                <select id="moto_modele"><option value="">-- MODÈLE --</option></select>
                 <input type="text" id="immat" placeholder="IMMATRICULATION">
             </div>
         </div>
 
-        <div class="section-card card-blue">
-            <h2><i class="fa-solid fa-camera"></i> Photos (Max 3)</h2>
-            <div style="padding: 15px;">
-                <label class="photo-btn" for="inpEtat">ÉTAT INITIAL</label>
-                <input type="file" id="inpEtat" class="hidden" multiple accept="image/*">
-                <div id="gal-etat" class="gallery"></div>
+        <!-- ══ DESCRIPTION DU PROJET ══ -->
+        <div class="section-card card-green">
+            <h2><i class="fa-solid fa-paint-brush"></i> Description du Projet</h2>
+            <div style="padding:15px;">
 
-                <label class="photo-btn" for="inpInsp" style="border-color: var(--neon-pink); color: var(--neon-pink);">INSPIRATION</label>
-                <input type="file" id="inpInsp" class="hidden" multiple accept="image/*">
-                <div id="gal-insp" class="gallery"></div>
+                <!-- Bouton micro -->
+                <button type="button" id="btnMic" onclick="toggleMic()">
+                    <i class="fa-solid fa-microphone" id="micIcon"></i>
+                    <span id="micLabel">DICTER LE PROJET</span>
+                </button>
+                <div id="micStatus">🎙️ Appuyez pour dicter votre description vocalement</div>
+
+                <!-- Couleurs rapides -->
+                <div style="font-size:11px; color:#888; margin-bottom:6px;">COULEURS DOMINANTES :</div>
+                <div class="color-chips" id="colorChips">
+                    <div class="chip" style="background:#111; color:#fff; border-color:#555;" data-color="Noir">⚫ Noir</div>
+                    <div class="chip" style="background:#eee; color:#000;" data-color="Blanc">⚪ Blanc</div>
+                    <div class="chip" style="background:#c0392b; color:#fff;" data-color="Rouge">🔴 Rouge</div>
+                    <div class="chip" style="background:#2980b9; color:#fff;" data-color="Bleu">🔵 Bleu</div>
+                    <div class="chip" style="background:#f39c12; color:#000;" data-color="Or">🟡 Or</div>
+                    <div class="chip" style="background:#27ae60; color:#fff;" data-color="Vert">🟢 Vert</div>
+                    <div class="chip" style="background:#8e44ad; color:#fff;" data-color="Violet">🟣 Violet</div>
+                    <div class="chip" style="background:linear-gradient(135deg,#f60,#ff0066); color:#fff;" data-color="Flammes">🔥 Flammes</div>
+                    <div class="chip" style="background:linear-gradient(135deg,#c0c0c0,#888); color:#000;" data-color="Chrome">✨ Chrome</div>
+                    <div class="chip" style="background:linear-gradient(135deg,#1a1a1a,#555); color:#fff;" data-color="Mat">🖤 Mat</div>
+                </div>
+
+                <!-- Style rapide -->
+                <div style="font-size:11px; color:#888; margin-bottom:6px;">STYLE :</div>
+                <div class="projet-toolbar" id="styleToolbar">
+                    <button type="button" class="tool-btn" data-style="Custom Japonais">🇯🇵 Japonais</button>
+                    <button type="button" class="tool-btn" data-style="Old School USA">🇺🇸 Old School</button>
+                    <button type="button" class="tool-btn" data-style="Racing / Sportif">🏁 Racing</button>
+                    <button type="button" class="tool-btn" data-style="Biomécanique">⚙️ Biomeca</button>
+                    <button type="button" class="tool-btn" data-style="Tribal">〰️ Tribal</button>
+                    <button type="button" class="tool-btn" data-style="Floral / Nature">🌿 Floral</button>
+                    <button type="button" class="tool-btn" data-style="Militaire">🪖 Militaire</button>
+                    <button type="button" class="tool-btn" data-style="Airbrush Portrait">🎨 Portrait</button>
+                </div>
+
+                <!-- Zone texte principale -->
+                <textarea id="description_projet"
+                    placeholder="Décrivez ici le projet avec le client : couleurs, style, pièces concernées, finitions, effets spéciaux…"
+                    oninput="updateCharCount()"></textarea>
+                <div class="char-count" id="charCount">0 caractères</div>
+
+                <!-- Pièces concernées -->
+                <div style="font-size:11px; color:#888; margin-bottom:6px;">PIÈCES CONCERNÉES :</div>
+                <div class="projet-toolbar" id="piecesToolbar">
+                    <button type="button" class="tool-btn" data-piece="Réservoir">⛽ Réservoir</button>
+                    <button type="button" class="tool-btn" data-piece="Carénages">🏍️ Carénages</button>
+                    <button type="button" class="tool-btn" data-piece="Garde-boue">🔩 Garde-boue</button>
+                    <button type="button" class="tool-btn" data-piece="Casque">⛑️ Casque</button>
+                    <button type="button" class="tool-btn" data-piece="Cadre">🔧 Cadre</button>
+                    <button type="button" class="tool-btn" data-piece="Jantes">⭕ Jantes</button>
+                </div>
+
             </div>
         </div>
 
+        <!-- ══ PHOTOS ══ -->
+        <div class="section-card card-blue">
+            <h2><i class="fa-solid fa-camera"></i> Photos <span style="font-size:0.8em;color:#aaa;text-transform:none;font-weight:normal;">— max 3 par section</span></h2>
+            <div style="padding:15px;">
+                <div style="margin-bottom:18px;">
+                    <label class="photo-btn" for="inpEtat">
+                        <i class="fa-solid fa-image"></i> ÉTAT INITIAL
+                        <span class="photo-count-badge" id="badgeEtat">0/3</span>
+                    </label>
+                    <input type="file" id="inpEtat" class="hidden" multiple accept="image/*" capture="environment">
+                    <div id="gal-etat" class="gallery"></div>
+                </div>
+                <div>
+                    <label class="photo-btn" for="inpInsp" style="border-color:var(--neon-pink);color:var(--neon-pink);">
+                        <i class="fa-solid fa-lightbulb"></i> IDÉE / INSPIRATION
+                        <span class="photo-count-badge" id="badgeInsp">0/3</span>
+                    </label>
+                    <input type="file" id="inpInsp" class="hidden" multiple accept="image/*" capture="environment">
+                    <div id="gal-insp" class="gallery"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ RÈGLEMENT ══ -->
         <div class="section-card card-blue">
             <h2><i class="fa-solid fa-euro-sign"></i> Règlement & Dépôt</h2>
-            <div style="padding: 15px;">
+            <div style="padding:15px;">
                 <div class="grid-2">
-                    <input type="number" id="prix" placeholder="PRIX TOTAL €">
+                    <input type="number" id="prix"    placeholder="PRIX TOTAL €">
                     <select id="mode_reglement">
                         <option value="Espèces">Espèces</option>
                         <option value="Virement">Virement</option>
@@ -140,188 +315,527 @@
                     </select>
                 </div>
                 <div class="grid-2">
-                    <input type="number" id="acompte" placeholder="ACOMPTE €">
-                    <input type="date" id="date_acompte">
+                    <input type="number" id="acompte"      placeholder="ACOMPTE €">
+                    <input type="date"   id="date_acompte">
                 </div>
-                <div style="margin-bottom: 10px;">
-                    <label style="font-size: 12px; color: var(--neon-blue);">DATE DE DÉPÔT PRÉVU :</label>
-                    <input type="date" id="date_depot">
-                </div>
+                <label style="font-size:12px;color:var(--neon-blue);">DATE DE DÉPÔT PRÉVU :</label>
+                <input type="date" id="date_depot">
 
                 <div class="sig-wrapper">
                     <canvas id="sig"></canvas>
                 </div>
-                <button type="button" onclick="signaturePad.clear()" style="background:none; border:none; color:var(--neon-pink); cursor:pointer; width:100%; text-align:right; padding:10px; font-weight: bold;">[ EFFACER LA SIGNATURE ]</button>
+                <button type="button" onclick="signaturePad.clear()"
+                    style="background:none;border:none;color:var(--neon-pink);cursor:pointer;width:100%;text-align:right;padding:10px;font-weight:bold;">
+                    [ EFFACER LA SIGNATURE ]
+                </button>
             </div>
         </div>
 
-        <button type="button" class="btn-submit" onclick="generatePDF()">GÉNÉRER ET ENVOYER LE PDF</button>
+        <button type="button" class="btn-submit" onclick="generatePDF()">
+            <i class="fa-solid fa-file-pdf"></i> GÉNÉRER ET ENVOYER LE PDF
+        </button>
+
     </form>
 </div>
 
 <script>
-    const canvas = document.getElementById('sig');
-    const signaturePad = new SignaturePad(canvas, { penColor: "rgb(0, 0, 0)" });
+// ════════════════════════════════════
+//  SIGNATURE
+// ════════════════════════════════════
+const canvas = document.getElementById('sig');
+const signaturePad = new SignaturePad(canvas, { penColor: "rgb(0,0,0)" });
 
-    function resizeCanvas() {
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio;
-        canvas.height = canvas.offsetHeight * ratio;
-        canvas.getContext("2d").scale(ratio, ratio);
-        signaturePad.clear();
+function resizeCanvas() {
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    canvas.width  = canvas.offsetWidth  * ratio;
+    canvas.height = canvas.offsetHeight * ratio;
+    canvas.getContext("2d").scale(ratio, ratio);
+    signaturePad.clear();
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+// ════════════════════════════════════
+//  MOTOS
+// ════════════════════════════════════
+const baseMotos = {
+    "Yamaha":   ["MT-07","MT-09","MT-10","R1","T-MAX","R7","R9","XSR125","XSR900"],
+    "Honda":    ["CB500","Africa Twin","X-ADV"],
+    "Kawasaki": ["Z900","Z650","ZX10R","ZX6R","Eliminator 500","Z1100","Z1000"],
+    "BMW":      ["R1250 GS","S1000RR","NineT"],
+    "Harley":   ["Sportster","Softail","Fat Boy","Street Glide"],
+    "Suzuki":   ["SV650","GSXR","Hayabusa"]
+};
+document.getElementById('marque').addEventListener('change', function() {
+    const m = document.getElementById('moto_modele');
+    m.innerHTML = '<option value="">-- MODÈLE --</option>';
+    (baseMotos[this.value] || []).forEach(mod => {
+        const o = document.createElement('option');
+        o.value = o.text = mod;
+        m.appendChild(o);
+    });
+});
+
+// ════════════════════════════════════
+//  CHIPS COULEURS
+// ════════════════════════════════════
+const selectedColors = new Set();
+document.querySelectorAll('#colorChips .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        const c = chip.dataset.color;
+        if (selectedColors.has(c)) {
+            selectedColors.delete(c);
+            chip.classList.remove('selected');
+        } else {
+            selectedColors.add(c);
+            chip.classList.add('selected');
+        }
+        syncDescription();
+    });
+});
+
+// ════════════════════════════════════
+//  BOUTONS STYLE
+// ════════════════════════════════════
+const selectedStyles = new Set();
+document.querySelectorAll('#styleToolbar .tool-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const s = btn.dataset.style;
+        if (selectedStyles.has(s)) {
+            selectedStyles.delete(s);
+            btn.classList.remove('active');
+        } else {
+            selectedStyles.add(s);
+            btn.classList.add('active');
+        }
+        syncDescription();
+    });
+});
+
+// ════════════════════════════════════
+//  BOUTONS PIÈCES
+// ════════════════════════════════════
+const selectedPieces = new Set();
+document.querySelectorAll('#piecesToolbar .tool-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const p = btn.dataset.piece;
+        if (selectedPieces.has(p)) {
+            selectedPieces.delete(p);
+            btn.classList.remove('active');
+        } else {
+            selectedPieces.add(p);
+            btn.classList.add('active');
+        }
+        syncDescription();
+    });
+});
+
+// ════════════════════════════════════
+//  SYNC DESCRIPTION AUTO
+//  (injecte les sélections dans le textarea
+//   sans écraser le texte libre en fin)
+// ════════════════════════════════════
+function syncDescription() {
+    const ta = document.getElementById('description_projet');
+    let auto = '';
+    if (selectedStyles.size)  auto += `Style : ${[...selectedStyles].join(', ')}.\n`;
+    if (selectedColors.size)  auto += `Couleurs : ${[...selectedColors].join(', ')}.\n`;
+    if (selectedPieces.size)  auto += `Pièces : ${[...selectedPieces].join(', ')}.\n`;
+
+    // Conserver le texte libre (après le bloc auto délimité)
+    const marker = '---';
+    const parts = ta.value.split(marker);
+    const freeText = parts.length > 1 ? parts.slice(1).join(marker) : '';
+    ta.value = auto + (freeText ? marker + freeText : '');
+    updateCharCount();
+}
+
+function updateCharCount() {
+    const len = document.getElementById('description_projet').value.length;
+    document.getElementById('charCount').textContent = `${len} caractère${len > 1 ? 's' : ''}`;
+}
+
+// ════════════════════════════════════
+//  RECONNAISSANCE VOCALE
+// ════════════════════════════════════
+let recognition = null;
+let isRecording = false;
+
+function toggleMic() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        alert("⚠️ La reconnaissance vocale n'est pas supportée sur ce navigateur.\nUtilisez Chrome ou Safari (iOS 15+).");
+        return;
     }
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
 
-    const baseMotos = {
-        "Yamaha": ["MT-07", "MT-09", "MT-10", "R1", "T-MAX", "R7", "R9", "XSR125", "XSR900"],
-        "Honda": ["CB500", "Africa Twin", "X-ADV"],
-        "Kawasaki": ["Z900", "Z650", "ZX10R", "ZX6R", "Eliminator 500", "Z1100", "Z1000"],
-        "BMW": ["R1250 GS", "S1000RR", "NineT"],
-        "Harley": ["Sportster", "Softail", "Fat Boy", "Street Glide"],
-        "Suzuki": ["SV650", "GSXR", "Hayabusa"]
+    if (isRecording) {
+        recognition.stop();
+        return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = 'fr-FR';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    const btn   = document.getElementById('btnMic');
+    const icon  = document.getElementById('micIcon');
+    const label = document.getElementById('micLabel');
+    const status= document.getElementById('micStatus');
+    const ta    = document.getElementById('description_projet');
+
+    let finalTranscript = '';
+
+    recognition.onstart = () => {
+        isRecording = true;
+        btn.classList.add('recording');
+        icon.className  = 'fa-solid fa-stop';
+        label.textContent = 'ARRÊTER LA DICTÉE';
+        status.innerHTML  = '🔴 Enregistrement en cours… parlez maintenant';
     };
 
-    document.getElementById('marque').addEventListener('change', function() {
-        const m = document.getElementById('moto_modele');
-        m.innerHTML = '<option value="">-- MODÈLE --</option>';
-        if(baseMotos[this.value]) {
-            baseMotos[this.value].forEach(mod => {
-                let o = document.createElement('option'); o.value = mod; o.text = mod;
-                m.appendChild(o);
-            });
-        }
-    });
-
-    const imgEtat = []; const imgInsp = [];
-    function handleFiles(inputId, galId, storage) {
-        document.getElementById(inputId).addEventListener('change', function(e) {
-            const gal = document.getElementById(galId);
-            gal.innerHTML = ""; storage.length = 0;
-            Array.from(e.target.files).slice(0, 3).forEach(file => {
-                const r = new FileReader();
-                r.onload = (ev) => {
-                    storage.push(ev.target.result);
-                    const i = document.createElement('img'); i.src = ev.target.result;
-                    gal.appendChild(i);
-                };
-                r.readAsDataURL(file);
-            });
-        });
-    }
-    handleFiles('inpEtat', 'gal-etat', imgEtat);
-    handleFiles('inpInsp', 'gal-insp', imgInsp);
-
-    async function generatePDF() {
-        try {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            // HEADER
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(22);
-            doc.setTextColor(233, 30, 99);
-            doc.text("DAM CUSTOM PAINT", 105, 20, { align: 'center' });
-            
-            doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text("SIRET : 839 100 898 00015 | Annequin (62)", 105, 28, { align: 'center' });
-            doc.text("TVA non applicable, art. 293 B du CGI", 105, 33, { align: 'center' });
-
-            // INFOS CLIENT
-            const nomC = document.getElementById('nom').value || 'CLIENT';
-            doc.setFontSize(12);
-            doc.setTextColor(0);
-            doc.text(`CLIENT : ${nomC}`, 15, 50);
-            doc.setFont("helvetica", "normal");
-            doc.text(`Email : ${document.getElementById('mail').value || '-'}`, 15, 57);
-            doc.text(`Tél : ${document.getElementById('tel').value || '-'}`, 15, 64);
-
-            // INFOS VÉHICULE
-            const marque = document.getElementById('marque').value;
-            const modele = document.getElementById('moto_modele').value;
-            doc.setFont("helvetica", "bold");
-            doc.text("VÉHICULE :", 15, 78);
-            doc.setFont("helvetica", "normal");
-            doc.text(`${marque} ${modele} [${document.getElementById('immat').value || 'SANS IMMAT'}]`, 50, 78);
-            doc.text(`Date de dépôt prévue : ${document.getElementById('date_depot').value || 'À définir'}`, 15, 85);
-
-            doc.setDrawColor(200);
-            doc.line(15, 92, 195, 92);
-
-            // RÈGLEMENT
-            const prix = parseFloat(document.getElementById('prix').value) || 0;
-            const acompte = parseFloat(document.getElementById('acompte').value) || 0;
-            const mode = document.getElementById('mode_reglement').value;
-            const dateAcompte = document.getElementById('date_acompte').value || '-';
-
-            doc.setFont("helvetica", "bold");
-            doc.text("DÉTAILS DU RÈGLEMENT :", 15, 102);
-            doc.setFont("helvetica", "normal");
-            doc.text(`PRIX TOTAL : ${prix} EUR`, 15, 110);
-            doc.text(`ACOMPTE VERSÉ : ${acompte} EUR (le ${dateAcompte})`, 15, 117);
-            doc.text(`MODE DE RÈGLEMENT : ${mode}`, 15, 124); 
-            
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(233, 30, 99);
-            doc.text(`RESTE À RÉGLER (SOLDE) : ${prix - acompte} EUR`, 15, 134);
-            doc.setTextColor(0);
-
-            // PHOTOS
-            doc.setFontSize(10);
-            doc.text("PHOTOS ÉTAT INITIAL :", 15, 148);
-            let xOff = 15;
-            imgEtat.forEach(img => { 
-                try { doc.addImage(img, 'JPEG', xOff, 150, 30, 30); xOff += 35; } catch(e){} 
-            });
-            
-            doc.text("PHOTOS INSPIRATION :", 15, 188);
-            xOff = 15;
-            imgInsp.forEach(img => { 
-                try { doc.addImage(img, 'JPEG', xOff, 190, 30, 30); xOff += 35; } catch(e){} 
-            });
-
-            // SIGNATURE
-            if (!signaturePad.isEmpty()) {
-                doc.setFont("helvetica", "bold");
-                doc.text("SIGNATURE CLIENT :", 140, 235);
-                const sigData = signaturePad.toDataURL();
-                doc.addImage(sigData, 'PNG', 140, 240, 45, 25);
-            }
-
-            doc.setFontSize(8);
-            doc.setTextColor(150);
-            doc.text("Document généré numériquement par DAM CUSTOM PAINT", 105, 285, { align: 'center' });
-
-            const pdfBlob = doc.output('blob');
-            const fileName = `BON_DAM_${nomC.replace(/\s+/g, '_')}.pdf`;
-
-            if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([pdfBlob], fileName, { type: 'application/pdf' })] })) {
-                const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
-                await navigator.share({
-                    files: [file],
-                    title: 'Bon de commande DAM CUSTOM PAINT',
-                    text: `Bonjour ${nomC}, voici votre bon de commande pour votre ${marque} ${modele}.`
-                });
+    recognition.onresult = (event) => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const t = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+                finalTranscript += t + ' ';
             } else {
-                doc.save(fileName);
+                interim = t;
             }
-
-            // --- REMISE À ZÉRO APRÈS GÉNÉRATION ---
-            if(confirm("PDF généré ! Voulez-vous vider le formulaire pour un nouveau client ?")) {
-                document.getElementById('orderForm').reset(); // Vide les textes/nombres
-                signaturePad.clear(); // Vide la signature
-                imgEtat.length = 0; // Vide les tableaux d'images
-                imgInsp.length = 0;
-                document.getElementById('gal-etat').innerHTML = ""; // Vide l'affichage des galeries
-                document.getElementById('gal-insp').innerHTML = "";
-            }
-
-        } catch (err) {
-            alert("Erreur : " + err.message);
         }
-    }
-</script>
+        // Affichage temps réel
+        status.innerHTML = interim
+            ? `💬 <em style="color:#aaa">${interim}</em>`
+            : '🔴 Enregistrement en cours… parlez maintenant';
 
+        // Injection dans la zone texte
+        const marker = '---';
+        const parts  = ta.value.split(marker);
+        const autoBlock = parts[0];
+        ta.value = autoBlock + (autoBlock.trim() ? marker : '') + '\n' + finalTranscript.trim();
+        updateCharCount();
+    };
+
+    recognition.onerror = (e) => {
+        status.textContent = `Erreur micro : ${e.error}`;
+        stopMic();
+    };
+
+    recognition.onend = () => { stopMic(); };
+
+    function stopMic() {
+        isRecording = false;
+        btn.classList.remove('recording');
+        icon.className    = 'fa-solid fa-microphone';
+        label.textContent = 'DICTER LE PROJET';
+        status.innerHTML  = '✅ Dictée terminée — vous pouvez modifier le texte';
+    }
+
+    recognition.start();
+}
+
+// ════════════════════════════════════
+//  PHOTOS
+// ════════════════════════════════════
+const imgEtat = [], imgInsp = [];
+
+function resizeImage(dataUrl, maxW = 800, maxH = 800) {
+    return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => {
+            let w = img.width, h = img.height;
+            if (w > maxW || h > maxH) {
+                const r = Math.min(maxW / w, maxH / h);
+                w = Math.round(w * r); h = Math.round(h * r);
+            }
+            const c = document.createElement('canvas');
+            c.width = w; c.height = h;
+            c.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve(c.toDataURL('image/jpeg', 0.82));
+        };
+        img.src = dataUrl;
+    });
+}
+
+function renderGallery(galId, storage, color, badgeId) {
+    const gal = document.getElementById(galId);
+    document.getElementById(badgeId).textContent = `${storage.length}/3`;
+    gal.innerHTML = '';
+    storage.forEach((src, idx) => {
+        const item = document.createElement('div');
+        item.className = 'gallery-item';
+        item.style.borderColor = color;
+
+        const img = document.createElement('img'); img.src = src;
+        const lbl = document.createElement('div'); lbl.className = 'img-label'; lbl.textContent = `Photo ${idx+1}`;
+        const del = document.createElement('button');
+        del.className = 'delete-btn'; del.type = 'button'; del.innerHTML = '✕';
+        del.onclick = () => { storage.splice(idx, 1); renderGallery(galId, storage, color, badgeId); };
+
+        item.appendChild(img); item.appendChild(lbl); item.appendChild(del);
+        gal.appendChild(item);
+    });
+    for (let i = storage.length; i < 3; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'gallery-slot-empty';
+        empty.innerHTML = '<i class="fa-solid fa-plus"></i>';
+        gal.appendChild(empty);
+    }
+}
+
+function handleFiles(inputId, galId, storage, color, badgeId) {
+    document.getElementById(inputId).addEventListener('change', async function(e) {
+        const remaining = 3 - storage.length;
+        if (!remaining) { alert("Maximum 3 photos atteint."); this.value = ''; return; }
+        const files = Array.from(e.target.files).slice(0, remaining);
+        for (const f of files) {
+            const url = await new Promise(res => {
+                const r = new FileReader();
+                r.onload = ev => res(ev.target.result);
+                r.readAsDataURL(f);
+            });
+            storage.push(await resizeImage(url));
+        }
+        renderGallery(galId, storage, color, badgeId);
+        this.value = '';
+    });
+}
+handleFiles('inpEtat', 'gal-etat', imgEtat, '#00f3ff', 'badgeEtat');
+handleFiles('inpInsp', 'gal-insp', imgInsp, '#ff00ff', 'badgeInsp');
+renderGallery('gal-etat', imgEtat, '#00f3ff', 'badgeEtat');
+renderGallery('gal-insp', imgInsp, '#ff00ff', 'badgeInsp');
+
+// ════════════════════════════════════
+//  GÉNÉRATION PDF
+// ════════════════════════════════════
+async function generatePDF() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        const PW = 210;
+        let y = 0;
+
+        // ── HEADER ──
+        doc.setFillColor(20, 20, 20);
+        doc.rect(0, 0, PW, 42, 'F');
+        doc.setFillColor(0, 243, 255);
+        doc.rect(0, 0, PW, 3, 'F');
+        doc.rect(0, 39, PW, 3, 'F');
+
+        doc.setFont("helvetica", "bold"); doc.setFontSize(26);
+        doc.setTextColor(255, 0, 255);
+        doc.text("DAM CUSTOM PAINT", PW/2, 18, { align:'center' });
+
+        doc.setFontSize(9); doc.setTextColor(0, 243, 255);
+        doc.text("SIRET : 839 100 898 00015  |  Annequin (62)", PW/2, 25, { align:'center' });
+        doc.text("TVA non applicable, art. 293 B du CGI", PW/2, 31, { align:'center' });
+
+        const bonNum = `BON-${Date.now().toString().slice(-6)}`;
+        doc.setFontSize(8); doc.setTextColor(180,180,180);
+        doc.text(`Réf : ${bonNum}  |  ${new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})}`, PW/2, 37, { align:'center' });
+
+        y = 50;
+
+        // ── CLIENT + MOTO ──
+        const nomC   = document.getElementById('nom').value   || 'CLIENT';
+        const marque = document.getElementById('marque').value || '-';
+        const modele = document.getElementById('moto_modele').value || '-';
+        const immat  = document.getElementById('immat').value || 'N/A';
+        const depot  = document.getElementById('date_depot').value || 'À définir';
+
+        // Cadre client
+        doc.setFillColor(30,30,30);
+        doc.roundedRect(10, y, 88, 42, 4, 4, 'F');
+        doc.setDrawColor(255,0,255); doc.setLineWidth(0.6);
+        doc.roundedRect(10, y, 88, 42, 4, 4, 'S');
+        doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(255,0,255);
+        doc.text("▌ CLIENT", 15, y+8);
+        doc.setFontSize(12); doc.setTextColor(255,255,255);
+        doc.text(nomC.toUpperCase(), 15, y+17);
+        doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(200,200,200);
+        doc.text(`✉  ${document.getElementById('mail').value || '-'}`, 15, y+25);
+        doc.text(`✆  ${document.getElementById('tel').value  || '-'}`, 15, y+32);
+
+        // Cadre moto
+        doc.setFillColor(30,30,30);
+        doc.roundedRect(108, y, 92, 42, 4, 4, 'F');
+        doc.setDrawColor(0,243,255);
+        doc.roundedRect(108, y, 92, 42, 4, 4, 'S');
+        doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(0,243,255);
+        doc.text("▌ VÉHICULE", 113, y+8);
+        doc.setFontSize(13); doc.setTextColor(255,255,255);
+        doc.text(`${marque} ${modele}`, 113, y+18);
+        doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(200,200,200);
+        doc.text(`Immat : ${immat}`, 113, y+26);
+        doc.text(`Dépôt prévu : ${depot}`, 113, y+33);
+
+        y += 50;
+
+        // ── RÈGLEMENT ──
+        const prix   = parseFloat(document.getElementById('prix').value)    || 0;
+        const acompte= parseFloat(document.getElementById('acompte').value) || 0;
+        const solde  = prix - acompte;
+        const mode   = document.getElementById('mode_reglement').value;
+        const dateA  = document.getElementById('date_acompte').value || '-';
+
+        doc.setFillColor(15,15,15);
+        doc.roundedRect(10, y, 190, 30, 4, 4, 'F');
+        doc.setDrawColor(0,243,255); doc.setLineWidth(0.4);
+        doc.roundedRect(10, y, 190, 30, 4, 4, 'S');
+        doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(0,243,255);
+        doc.text("▌ RÈGLEMENT", 15, y+7);
+
+        const cols = [
+            { label:"PRIX TOTAL",           val:`${prix.toFixed(2)} EUR` },
+            { label:`ACOMPTE (${dateA})`,    val:`${acompte.toFixed(2)} EUR` },
+            { label:"MODE",                  val: mode }
+        ];
+        cols.forEach((c,i) => {
+            const cx = 15 + i*60;
+            doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor(150,150,150);
+            doc.text(c.label, cx, y+15);
+            doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(255,255,255);
+            doc.text(c.val, cx, y+23);
+        });
+        doc.setFillColor(50,0,50);
+        doc.roundedRect(148, y+10, 50, 16, 3, 3, 'F');
+        doc.setFont("helvetica","bold"); doc.setFontSize(7); doc.setTextColor(255,150,255);
+        doc.text("SOLDE RESTANT", 173, y+16, { align:'center' });
+        doc.setFontSize(12); doc.setTextColor(255,0,255);
+        doc.text(`${solde.toFixed(2)} EUR`, 173, y+23, { align:'center' });
+
+        y += 38;
+
+        // ── DESCRIPTION PROJET ──
+        const descRaw = document.getElementById('description_projet').value.trim();
+        // Nettoyer le marqueur interne
+        const descClean = descRaw.replace(/---/g, '').replace(/\n{3,}/g, '\n\n').trim();
+
+        if (descClean) {
+            // Vérifier place dispo
+            if (y + 12 > 275) { doc.addPage(); y = 15; }
+
+            // Fond + titre
+            doc.setFillColor(10, 25, 15);
+            doc.roundedRect(10, y, 190, 8, 2, 2, 'F');
+            doc.setFillColor(0, 255, 136);
+            doc.rect(10, y, 3, 8, 'F');
+            doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor(0,255,136);
+            doc.text("▌ DESCRIPTION DU PROJET", 17, y+5.5);
+            y += 12;
+
+            // Lignes du texte
+            doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.setTextColor(220,220,220);
+            const lines = doc.splitTextToSize(descClean, 182);
+            const blockH = lines.length * 5.5 + 8;
+
+            doc.setFillColor(20, 30, 22);
+            doc.roundedRect(10, y, 190, blockH, 3, 3, 'F');
+            doc.setDrawColor(0,100,50); doc.setLineWidth(0.3);
+            doc.roundedRect(10, y, 190, blockH, 3, 3, 'S');
+
+            doc.text(lines, 15, y+6);
+            y += blockH + 6;
+        }
+
+        // ── PHOTOS ──
+        async function drawPhotoSection(title, color, images, startY) {
+            if (startY + 12 > 275) { doc.addPage(); startY = 15; }
+            const rgb = color === 'pink' ? [255,0,255] : [0,243,255];
+
+            doc.setFillColor(25,25,25);
+            doc.rect(10, startY, 190, 8, 'F');
+            doc.setFillColor(...rgb);
+            doc.rect(10, startY, 3, 8, 'F');
+            doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor(...rgb);
+            doc.text(title, 17, startY+5.5);
+            startY += 12;
+
+            if (!images.length) {
+                doc.setFont("helvetica","italic"); doc.setFontSize(9); doc.setTextColor(100,100,100);
+                doc.text("Aucune photo fournie.", 15, startY+5);
+                return startY + 12;
+            }
+
+            const imgW = 58, imgH = 46, gap = 8;
+            const startX = 10 + (190 - images.length*imgW - (images.length-1)*gap) / 2;
+
+            for (let i = 0; i < images.length; i++) {
+                const ix = startX + i*(imgW+gap);
+                doc.setFillColor(30,30,30);
+                doc.roundedRect(ix-1, startY-1, imgW+2, imgH+9, 3, 3, 'F');
+                doc.setDrawColor(...rgb); doc.setLineWidth(0.5);
+                doc.roundedRect(ix-1, startY-1, imgW+2, imgH+9, 3, 3, 'S');
+                try { doc.addImage(images[i], 'JPEG', ix, startY, imgW, imgH); } catch(e) {}
+                doc.setFont("helvetica","bold"); doc.setFontSize(7); doc.setTextColor(...rgb);
+                doc.text(`Photo ${i+1}`, ix+imgW/2, startY+imgH+6, { align:'center' });
+            }
+            return startY + imgH + 14;
+        }
+
+        if (y + 70 > 275) { doc.addPage(); y = 15; }
+        y = await drawPhotoSection("ÉTAT INITIAL DU VÉHICULE", "blue", imgEtat, y);
+        y += 4;
+        if (y + 70 > 275) { doc.addPage(); y = 15; }
+        y = await drawPhotoSection("IDÉE / INSPIRATION", "pink", imgInsp, y);
+        y += 8;
+
+        // ── SIGNATURE ──
+        if (!signaturePad.isEmpty()) {
+            if (y + 42 > 280) { doc.addPage(); y = 15; }
+            doc.setFillColor(25,25,25);
+            doc.roundedRect(120, y, 78, 38, 4, 4, 'F');
+            doc.setDrawColor(0,243,255); doc.setLineWidth(0.4);
+            doc.roundedRect(120, y, 78, 38, 4, 4, 'S');
+            doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(0,243,255);
+            doc.text("SIGNATURE CLIENT", 159, y+7, { align:'center' });
+            doc.addImage(signaturePad.toDataURL('image/png'), 'PNG', 125, y+10, 68, 22);
+            y += 42;
+        }
+
+        // ── FOOTER ──
+        doc.setFillColor(20,20,20);
+        doc.rect(0, 285, PW, 12, 'F');
+        doc.setFillColor(0,243,255);
+        doc.rect(0, 285, PW, 1, 'F');
+        doc.setFont("helvetica","italic"); doc.setFontSize(7.5); doc.setTextColor(120,120,120);
+        doc.text("Document généré numériquement par DAM CUSTOM PAINT — Tous droits réservés", PW/2, 291, { align:'center' });
+
+        // ── PARTAGE / SAVE ──
+        const fileName = `BON_DAM_${nomC.replace(/\s+/g,'_')}_${bonNum}.pdf`;
+        const pdfBlob  = doc.output('blob');
+
+        if (navigator.share && navigator.canShare?.({ files:[new File([pdfBlob], fileName, { type:'application/pdf' })] })) {
+            await navigator.share({
+                files: [new File([pdfBlob], fileName, { type:'application/pdf' })],
+                title: 'Bon de commande DAM CUSTOM PAINT',
+                text:  `Bonjour ${nomC}, voici votre bon de commande pour votre ${marque} ${modele}.`
+            });
+        } else {
+            doc.save(fileName);
+        }
+
+        // ── RESET ──
+        if (confirm("PDF généré ✅\nVider le formulaire pour un nouveau client ?")) {
+            document.getElementById('orderForm').reset();
+            signaturePad.clear();
+            imgEtat.length = imgInsp.length = 0;
+            renderGallery('gal-etat', imgEtat, '#00f3ff', 'badgeEtat');
+            renderGallery('gal-insp', imgInsp, '#ff00ff', 'badgeInsp');
+            selectedColors.clear(); selectedStyles.clear(); selectedPieces.clear();
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('micStatus').innerHTML = '🎙️ Appuyez pour dicter votre description vocalement';
+            updateCharCount();
+        }
+
+    } catch(err) {
+        console.error(err);
+        alert("Erreur : " + err.message);
+    }
+}
+</script>
 </body>
 </html>
